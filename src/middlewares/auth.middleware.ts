@@ -1,7 +1,7 @@
 import type { NextFunction, Request, Response } from "express";
 import { HttpError } from "../shared/errors/http.error.js";
 import { HttpErrorStatus } from "../shared/constants/http_status.js";
-import { verifyJwt } from "../shared/utils/jwt.services.js";
+import { verifyJwt } from "../shared/utils/jwt.util.js";
 import { env } from "../configs/env.config.js";
 
 export interface AuthUser {
