@@ -14,7 +14,7 @@ export async function syncUserController(req: Request, res: Response) {
 
   const validation = syncUserRequestSchema.safeParse({ userId });
   if (!validation.success) {
-    throw new HttpError(HttpErrorStatus.BAD_REQUEST, "Invalid request");
+    throw new HttpError(HttpErrorStatus.BAD_REQUEST, validation.error.message);
   }
 
   await userService.syncUser({ userId });
