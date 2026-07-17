@@ -23,7 +23,7 @@ export function errorMiddleware(
 
   const body = {
     success: false,
-    error: getError(),
+    error: getError().message,
   };
   return res.status(getError().status).json(body);
 }
