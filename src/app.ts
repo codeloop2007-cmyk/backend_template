@@ -2,7 +2,7 @@ import express from "express";
 import { authMiddleware } from "./middlewares/auth.middleware.js";
 import { errorMiddleware } from "./middlewares/error_handler.middleware.js";
 import { notFoundMiddleware } from "./middlewares/not_found.middleware.js";
-import { userRoute } from "./features/user/user.router.js";
+import userRouter from "./features/user/user.route.js";
 
 const app = express();
 
@@ -19,7 +19,7 @@ app.get("/health", (_req, res) => {
 
 app.use(authMiddleware);
 ////
-app.use("/user", userRoute);
+app.use("/user", userRouter);
 // throw if no route
 app.use(notFoundMiddleware);
 // Error handler MUST be last

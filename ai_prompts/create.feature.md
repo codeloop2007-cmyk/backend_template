@@ -152,8 +152,10 @@ Rules:
 - Only connect routes to controllers.
 - Use the proper HTTP method (`get`, `post`, `patch`, `put`, `delete`).
 - Do not use `router.use()` for API endpoints.
-
-Example:
+- all the function in repo entity controller should be exported under the name eg export nameRepo ={
+  getId ....
+  }
+  Example:
 
 ```ts
 router.post("/sync", userController.syncUser);
