@@ -10,15 +10,20 @@ export function errorMiddleware(
 ) {
   console.error(error);
 
-  if (error instanceof HttpError) {
-    return res.status(error.status).json({
-      success: false,
-      message: error.message,
-    });
-  }
+  const getError = () => {
+    if (error instanceof HttpError) {
+      return error;
+    } else {
+      return new HttpError(
+        HttpErrorStatus.INTERNAL_SERVER_ERROR,
+        "internal server error",
+      );
+    }
+  };
 
-  return res.status(HttpErrorStatus.INTERNAL_SERVER_ERROR).json({
+  const body = {
     success: false,
-    message: "Internal server error",
-  });
+    error: getError(),
+  };
+  return res.status(getError().status).json(body);
 }

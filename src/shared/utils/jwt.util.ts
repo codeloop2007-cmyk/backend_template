@@ -17,10 +17,5 @@ export function verifyJwt<T extends JwtPayload>(
   secret: Secret,
 ): T {
   const decoded = jwt.verify(token, secret);
-
-  if (typeof decoded === "string") {
-    throw new Error("Expected JWT payload to be an object.");
-  }
-
   return decoded as T;
 }

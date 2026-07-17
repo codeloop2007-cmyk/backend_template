@@ -1,41 +1,47 @@
 import type { NextFunction, Request, Response } from "express";
-import { HttpError } from "../shared/errors/http.error.js";
-import { HttpErrorStatus } from "../shared/constants/http_status.js";
-import { verifyJwt } from "../shared/utils/jwt.util.js";
-import { env } from "../configs/env.config.js";
+import z from "zod";
 
-export interface AuthUser {
+import { env } from "../configs/env.config.js";
+import { HttpErrorStatus } from "../shared/constants/http_status.js";
+import { HttpError } from "../shared/errors/http.error.js";
+import { verifyJwt } from "../shared/utils/jwt.util.js";
+
+export interface JwtPayload {
   id: string;
 }
+
+const authMiddlewareRequestSchema = z.object({
+  headers: z.object({
+    authorization: z.string().startsWith("Bearer "),
+  }),
+});
 
 export function authMiddleware(
   req: Request,
   _res: Response,
   next: NextFunction,
-) {
-  const authHeader = req.headers.authorization;
+): void {
+  const result = authMiddlewareRequestSchema.safeParse(req);
 
-  if (!authHeader) {
+  if (!result.success) {
     throw new HttpError(
       HttpErrorStatus.UNAUTHORIZED,
-      "Authorization header missing",
+      "Authorization header is invalid",
     );
   }
 
-  const [type, token] = authHeader.split(" ");
+  const token = result.data.headers.authorization.split(" ")[1];
 
-  if (type !== "Bearer" || !token) {
+  try {
+    const payload = verifyJwt<JwtPayload>(token!, env.JWT_SECRET);
+
+    req.userId = payload.id;
+
+    next();
+  } catch {
     throw new HttpError(
       HttpErrorStatus.UNAUTHORIZED,
-      "Invalid authorization format",
+      "Invalid or expired token",
     );
   }
-
-  const payload = verifyJwt<AuthUser>(token, env.JWT_SECRET);
-
-  req.user = {
-    id: payload.id,
-  };
-
-  next();
 }
