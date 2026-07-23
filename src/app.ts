@@ -1,8 +1,7 @@
 import express from "express";
-import { authMiddleware } from "./middlewares/auth.middleware.js";
 import { errorMiddleware } from "./middlewares/error_handler.middleware.js";
-import { notFoundMiddleware } from "./middlewares/not_found.middleware.js";
-import userRouter from "./features/user/user.route.js";
+import { invalidRouteMiddleware } from "./middlewares/not_found.middleware.js";
+import { healthRoute } from "./features/health/check_health.js";
 
 const app = express();
 
@@ -10,18 +9,11 @@ const app = express();
 app.use(express.json());
 
 // Health check route
-app.get("/health", (_req, res) => {
-  res.status(200).json({
-    success: true,
-    message: "TrainX Backend is running",
-  });
-});
+app.use(healthRoute);
 
-app.use(authMiddleware);
 ////
-app.use("/user", userRouter);
 // throw if no route
-app.use(notFoundMiddleware);
+app.use(invalidRouteMiddleware);
 // Error handler MUST be last
 app.use(errorMiddleware);
 
